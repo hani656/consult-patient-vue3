@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
+    "vant": "^4.7.3",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },
@@ -36,6 +37,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",
     "npm-run-all2": "^6.1.1",
+    "postcss-px-to-viewport": "^1.1.1",
     "prettier": "^3.0.3",
     "sass": "^1.69.5",
     "typescript": "~5.2.0",
