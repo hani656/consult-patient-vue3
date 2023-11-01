@@ -2,6 +2,7 @@
 import { Button as VanButton } from 'vant'
 import { useUserStore } from './stores'
 import request from './utils/request'
+import type { User } from './types/user'
 
 const store = useUserStore()
 
@@ -17,6 +18,7 @@ const getUser = () => {
     }
   }
   request('patient/myUser', options)
+  // request('patient/myUser', 'get', { test: 1 })
 }
 
 // 测试登录
@@ -32,16 +34,15 @@ const login = () => {
   //   })
   //
   const options1 = {
-    method: 'POST',
+    // method: 'POST',
     data: {
       mobile: '13211112222',
       password: 'abc12345'
     }
   }
-
-  request('login/password', options1)
+  request<User>('login/password', options1)
     .then((res) => {
-      console.log('成功', res)
+      console.log('成功', res.data.account)
     })
     .catch((err) => {
       console.log('失败', err)
