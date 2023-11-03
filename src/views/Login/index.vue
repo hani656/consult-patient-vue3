@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
-import { showSuccessToast, showToast } from 'vant'
-import { loginByPassword } from '@/services/user'
+import { showSuccessToast, showToast, type FormInstance } from 'vant'
+import { loginByPassword, sendMobileCode } from '@/services/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
+import { onUnmounted } from 'vue'
 
 // 测试账号
 // 手机号：13230000001 - 13230000100、13211112222
@@ -32,6 +33,29 @@ const onSubmit = async () => {
 // 短信登录界面切换
 const isPass = ref(true)
 const code = ref('')
+
+// 发送短信验证码
+const time = ref(0)
+const form = ref<FormInstance>()
+let timer: number
+const onSend = async () => {
+  // 验证：倒计时，手机号
+  if (time.value > 0) return
+  await form.value?.validate('mobile')
+  await sendMobileCode(mobile.value, 'login')
+  showToast('发送成功')
+  time.value = 5
+  // 开始倒计时
+  if (timer) clearInterval(timer)
+  timer = setInterval(() => {
+    time.value--
+    if (time.value <= 0) clearInterval(timer)
+  }, 1000)
+}
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
 </script>
 
 <template>
@@ -51,8 +75,9 @@ const code = ref('')
       </a>
     </div>
     <!-- 表单 -->
-    <van-form autocomplete="off" @submit="onSubmit">
+    <van-form autocomplete="off" @submit="onSubmit" ref="form">
       <van-field
+        name="mobile"
         v-model="mobile"
         :rules="mobileRules"
         placeholder="请输入手机号"
@@ -72,7 +97,9 @@ const code = ref('')
         v-model="code"
       >
         <template #button>
-          <span class="btn-send">发送验证码</span>
+          <span class="btn-send" :class="{ active: time > 0 }" @click="onSend">
+            {{ time > 0 ? `${time}s后再次发送` : '发送验证码' }}
+          </span>
         </template>
       </van-field>
       <div class="cp-cell">
