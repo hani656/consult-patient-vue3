@@ -1,6 +1,12 @@
 import { useUserStore } from '@/stores'
-import { storeToRefs } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
+
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+NProgress.configure({
+  showSpinner: false
+})
 
 // 如何得到路由实例 createRouter()
 // 如何设置路由模式 history
@@ -48,6 +54,7 @@ const router = createRouter({
 
 // 全局的前置守卫
 router.beforeEach((to) => {
+  NProgress.start()
   // 获取 token 的
   const store = useUserStore()
   // 白名单
@@ -60,6 +67,7 @@ router.beforeEach((to) => {
 router.afterEach((to) => {
   // 页面的标题
   document.title = `${to.meta.title || ''}-优医问诊}`
+  NProgress.done()
 })
 
 export default router
