@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
 import { showSuccessToast, showToast, type FormInstance } from 'vant'
-import { loginByPassword, sendMobileCode } from '@/services/user'
+import { loginByMobile, loginByPassword, sendMobileCode } from '@/services/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
 import { onUnmounted } from 'vue'
@@ -11,8 +11,8 @@ import { onUnmounted } from 'vue'
 // 手机号：13230000001 - 13230000100、13211112222
 // 密码：abc12345
 
-const mobile = ref('')
-const password = ref('')
+const mobile = ref('13211112222')
+const password = ref('abc12345')
 const agree = ref(false)
 
 const store = useUserStore()
@@ -23,8 +23,10 @@ const route = useRoute()
 
 const onSubmit = async () => {
   if (!agree.value) return showToast('请勾选协议')
-  // 进行登录
-  const res = await loginByPassword(mobile.value, password.value)
+  // 进行登录(合并短信登录)
+  const res = isPass.value
+    ? await loginByPassword(mobile.value, password.value)
+    : await loginByMobile(mobile.value, code.value)
   store.setUser(res.data)
   showSuccessToast('登录成功')
   router.replace((route.query.returnUrl as string) || '/user')
@@ -44,7 +46,7 @@ const onSend = async () => {
   await form.value?.validate('mobile')
   await sendMobileCode(mobile.value, 'login')
   showToast('发送成功')
-  time.value = 5
+  time.value = 60
   // 开始倒计时
   if (timer) clearInterval(timer)
   timer = setInterval(() => {
