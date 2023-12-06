@@ -3,6 +3,7 @@ import type { UserInfo } from '@/types/user'
 import { ref } from 'vue'
 
 const userInfo = ref<UserInfo>()
+// 1111
 </script>
 
 <template>
