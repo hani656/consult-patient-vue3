@@ -12,6 +12,12 @@ const loadList = async () => {
 onMounted(() => {
   loadList()
 })
+
+const options = [
+  { label: '男', value: 1 },
+  { label: '女', value: 0 }
+]
+const gender = ref(1)
 </script>
 
 <template>
@@ -35,6 +41,7 @@ onMounted(() => {
         <p>添加患者</p>
       </div>
       <div class="patient-tip">最多可添加 6 人</div>
+      <cp-radio-btn :options="options" v-model="gender"></cp-radio-btn>
     </div>
   </div>
 </template>
