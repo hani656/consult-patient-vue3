@@ -29,3 +29,8 @@ export const getPatientList = () => request<PatientList>('/patient/mylist')
 export const addPatient = (patient: Patient) => {
   request('/patient/add', 'post', patient)
 }
+
+// 编辑患者
+export const editPatient = (patient: Patient) => {
+  request('/patient/update', 'put', patient)
+}

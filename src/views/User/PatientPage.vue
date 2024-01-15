@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPatientList, addPatient } from '@/services/user'
+import { getPatientList, addPatient, editPatient } from '@/services/user'
 import type { PatientList, Patient } from '@/types/user'
 import { ref, onMounted, computed } from 'vue'
 import { nameRules, idCardRules } from '@/utils/rules'
@@ -22,8 +22,14 @@ const options = [
 
 // 控制 popup
 const show = ref(false)
-const showPopup = () => {
-  patient.value = { ...initPatient }
+const showPopup = (item?: Patient) => {
+  if (item) {
+    const { id, name, idCard, gender, defaultFlag } = item
+    patient.value = { id, name, idCard, gender, defaultFlag }
+  } else {
+    form.value?.resetValidation()
+    patient.value = { ...initPatient }
+  }
   show.value = true
 }
 const initPatient: Patient = {
@@ -54,12 +60,14 @@ const onSubmit = async () => {
       message: '填写的性别与身份证上的不一致\n您确定提交吗？'
     })
   }
-  // 提交提问
-  await addPatient(patient.value)
+  // 提交提问  添加 或者 编辑
+  patient.value.id
+    ? await editPatient(patient.value)
+    : await addPatient(patient.value)
   // 成功：关闭添加患者界面，加载患者列表，成功提示
   show.value = false
   loadList()
-  showSuccessToast('添加成功')
+  showSuccessToast(patient.value.id ? '编辑成功' : '添加成功')
 }
 </script>
 
@@ -74,12 +82,14 @@ const onSubmit = async () => {
             item.idCard.replace(/^(.{6}).+(.{4})$/, '$1********$2')
           }}</span>
           <span>{{ item.genderValue }}</span>
-          <span>{{ item.age }}</span>
+          <span>{{ item.age }}岁</span>
         </div>
-        <div class="icon"><cp-icon name="user-edit" /></div>
+        <div class="icon" @click="showPopup(item)">
+          <cp-icon name="user-edit" />
+        </div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
-      <div class="patient-add" v-if="list.length < 6" @click="showPopup">
+      <div class="patient-add" v-if="list.length < 6" @click="showPopup()">
         <cp-icon name="user-add" />
         <p>添加患者</p>
       </div>
@@ -88,7 +98,7 @@ const onSubmit = async () => {
       <!-- 使用 popup 组件 -->
       <van-popup position="right" v-model:show="show">
         <cp-nav-bar
-          title="添加患者"
+          :title="patient.id ? '编辑患者' : '添加患者'"
           right-text="保存"
           :back="() => (show = false)"
           @click-right="onSubmit"
