@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import KnowledgeCard from './KnowledgeCard.vue'
 import { ref } from 'vue'
+import type { KnowledgeType } from '@/types/consult'
+
+defineProps<{
+  type: KnowledgeType
+}>()
 
 // 加载的状态
 const loading = ref(false)
 // 是否完全加载完毕数据
 const finished = ref(false)
 // 数据列表
-const list = ref<number>([])
+const list = ref<number[]>([])
 // 滚动到底部
 const onLoad = () => {
   // 模拟加载后台数据
@@ -15,7 +20,7 @@ const onLoad = () => {
   setTimeout(() => {
     list.value.push(...data)
     // 模拟完全加载完毕数据
-    if (list.value > 20) {
+    if (list.value.length > 20) {
       finished.value = true
     }
     loading.value = false

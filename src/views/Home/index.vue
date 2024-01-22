@@ -80,16 +80,16 @@ const active = ref(1)
     </div>
     <van-tabs shrink sticky v-model:active="active">
       <van-tab title="关注">
-        <Knowledge-list />
+        <KnowledgeList type="like" />
       </van-tab>
       <van-tab title="推荐">
-        <Knowledge-list />
+        <KnowledgeList type="recommend" />
       </van-tab>
       <van-tab title="减脂">
-        <Knowledge-list />
+        <KnowledgeList type="fatReduction" />
       </van-tab>
       <van-tab title="饮食">
-        <Knowledge-list />
+        <KnowledgeList type="food" />
       </van-tab>
     </van-tabs>
   </div>
